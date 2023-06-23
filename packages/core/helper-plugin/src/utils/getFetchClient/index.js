@@ -1,5 +1,4 @@
 import instance from '../fetchClient';
-import qs from 'qs';
 
 const addPrependingSlash = (url) =>
   typeof url === 'string' && url.charAt(0) !== '/' ? `/${url}` : url;
@@ -10,10 +9,6 @@ const hasProtocol = (url) => new RegExp('^(?:[a-z+]+:)?//', 'i').test(url);
 // Check if the url has a prepending slash, if not add a slash
 const normalizeUrl = (url) => (hasProtocol(url) ? url : addPrependingSlash(url));
 
-const paramsSerializer = (params) => {
-  return qs.stringify(params, { encode: false });
-};
-
 const getFetchClient = (defaultOptions = {}) => {
   instance.defaults.baseURL = window.strapi.backendURL;
   return {
@@ -21,14 +16,12 @@ const getFetchClient = (defaultOptions = {}) => {
       instance.get(normalizeUrl(url), {
         ...defaultOptions,
         ...config,
-        paramsSerializer,
       }),
     put: (url, data, config) =>
-      instance.put(normalizeUrl(url), data, { ...defaultOptions, ...config, paramsSerializer }),
+      instance.put(normalizeUrl(url), data, { ...defaultOptions, ...config }),
     post: (url, data, config) =>
-      instance.post(normalizeUrl(url), data, { ...defaultOptions, ...config, paramsSerializer }),
-    del: (url, config) =>
-      instance.delete(normalizeUrl(url), { ...defaultOptions, ...config, paramsSerializer }),
+      instance.post(normalizeUrl(url), data, { ...defaultOptions, ...config }),
+    del: (url, config) => instance.delete(normalizeUrl(url), { ...defaultOptions, ...config }),
   };
 };
 

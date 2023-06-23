@@ -43,39 +43,4 @@ describe('HELPER-PLUGIN | utils | getFetchClient', () => {
       expect(url).toBe('https://example.com');
     }
   });
-
-  it('should contain a paramsSerializer that can serialize the params object to a string', async () => {
-    const mockParams = {
-      page: '1',
-      pageSize: '10',
-      sort: 'short_text:ASC',
-      filters: {
-        $and: [
-          {
-            biginteger: {
-              $eq: '3',
-            },
-          },
-          {
-            short_text: {
-              $eq: 'test',
-            },
-          },
-        ],
-      },
-      locale: 'en',
-    };
-
-    const fetchClient = getFetchClient();
-
-    try {
-      await fetchClient.get('/test', { params: mockParams });
-    } catch (err) {
-      const { paramsSerializer, params } = err.config;
-      const serializedParams = paramsSerializer.serialize(params);
-      expect(serializedParams).toBe(
-        'page=1&pageSize=10&sort=short_text:ASC&filters[$and][0][biginteger][$eq]=3&filters[$and][1][short_text][$eq]=test&locale=en'
-      );
-    }
-  });
 });
