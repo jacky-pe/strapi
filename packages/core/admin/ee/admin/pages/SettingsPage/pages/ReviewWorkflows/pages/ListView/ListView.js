@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 import {
   Flex,
   IconButton,
@@ -24,14 +25,31 @@ import {
   useFetchClient,
   useNotification,
 } from '@strapi/helper-plugin';
+import {
+  ConfirmDialog,
+  Link,
+  LinkButton,
+  onRowClick,
+  pxToRem,
+  useAPIErrorHandler,
+  useFetchClient,
+  useNotification,
+} from '@strapi/helper-plugin';
 import { Pencil, Plus, Trash } from '@strapi/icons';
+import { useIntl } from 'react-intl';
+import { useMutation } from 'react-query';
+import { useHistory } from 'react-router-dom';
+import styled from 'styled-components';
 import { useIntl } from 'react-intl';
 import { useMutation } from 'react-query';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { useContentTypes } from '../../../../../../../../admin/src/hooks/useContentTypes';
+import { useLicenseLimits } from '../../../../../../hooks';
 import * as Layout from '../../components/Layout';
+import * as LimitsModal from '../../components/LimitsModal';
+import { useReviewWorkflows } from '../../hooks/useReviewWorkflows';
 import { useReviewWorkflows } from '../../hooks/useReviewWorkflows';
 
 const ActionLink = styled(Link)`
@@ -65,11 +83,13 @@ export function ReviewWorkflowsListView() {
   const { formatMessage } = useIntl();
   const { push } = useHistory();
   const { collectionTypes, singleTypes, isLoading: isLoadingModels } = useContentTypes();
-  const { workflows, isLoading, refetch } = useReviewWorkflows();
+  const { pagination, workflows, isLoading, refetch } = useReviewWorkflows();
   const [workflowToDelete, setWorkflowToDelete] = React.useState(null);
+  const [showLimitModal, setShowLimitModal] = React.useState(false);
   const { del } = useFetchClient();
   const { formatAPIError } = useAPIErrorHandler();
   const toggleNotification = useNotification();
+  const { license } = useLicenseLimits();
 
   const { mutateAsync, isLoading: isLoadingMutation } = useMutation(
     async ({ workflowId, stages }) => {
@@ -129,7 +149,17 @@ export function ReviewWorkflowsListView() {
     <>
       <Layout.Header
         primaryAction={
-          <LinkButton startIcon={<Plus />} size="S" to="/settings/review-workflows/create">
+          <LinkButton
+            startIcon={<Plus />}
+            size="S"
+            to="/settings/review-workflows/create"
+            onClick={(event) => {
+              if (pagination?.total >= license.data.workflows) {
+                event.preventDefault();
+                setShowLimitModal(true);
+              }
+            }}
+          >
             {formatMessage({
               id: 'Settings.review-workflows.list.page.create',
               defaultMessage: 'Create new workflow',
@@ -158,9 +188,18 @@ export function ReviewWorkflowsListView() {
         ) : (
           <Table
             colCount={3}
-            // TODO: we should be able to use a link here instead of an (inaccessible onClick) handler
             footer={
-              <TFooter icon={<Plus />} onClick={() => push('/settings/review-workflows/create')}>
+              // TODO: we should be able to use a link here instead of an (inaccessible onClick) handler
+              <TFooter
+                icon={<Plus />}
+                onClick={() => {
+                  if (pagination?.total >= license?.data?.workflows) {
+                    setShowLimitModal(true);
+                  } else {
+                    push('/settings/review-workflows/create');
+                  }
+                }}
+              >
                 {formatMessage({
                   id: 'Settings.review-workflows.list.page.create',
                   defaultMessage: 'Create new workflow',
@@ -283,7 +322,24 @@ export function ReviewWorkflowsListView() {
           onToggleDialog={toggleConfirmDeleteDialog}
           onConfirm={handleConfirmDeleteDialog}
         />
+
+        <LimitsModal.Root isOpen={showLimitModal} onClose={() => setShowLimitModal(false)}>
+          <LimitsModal.Title>
+            {formatMessage({
+              id: 'Settings.review-workflows.list.page.workflows.limit.title',
+              defaultMessage: 'You’ve reached the limit of workflows in your plan',
+            })}
+          </LimitsModal.Title>
+
+          <LimitsModal.Body>
+            {formatMessage({
+              id: 'Settings.review-workflows.list.page.workflows.limit.body',
+              defaultMessage: 'Delete a workflow or contact Sales to enable more workflows.',
+            })}
+          </LimitsModal.Body>
+        </LimitsModal.Root>
       </Layout.Root>
+    </>
     </>
   );
 }

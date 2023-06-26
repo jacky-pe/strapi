@@ -3,6 +3,10 @@ import * as React from 'react';
 import { Button, Flex, Loader } from '@strapi/design-system';
 import { useAPIErrorHandler, useFetchClient, useNotification } from '@strapi/helper-plugin';
 import { Check } from '@strapi/icons';
+
+import { Button, Flex, Loader } from '@strapi/design-system';
+import { useAPIErrorHandler, useFetchClient, useNotification } from '@strapi/helper-plugin';
+import { Check } from '@strapi/icons';
 import { useFormik, Form, FormikProvider } from 'formik';
 import { useIntl } from 'react-intl';
 import { useMutation } from 'react-query';
@@ -11,11 +15,18 @@ import { useHistory } from 'react-router-dom';
 
 import { useContentTypes } from '../../../../../../../../admin/src/hooks/useContentTypes';
 import { useInjectReducer } from '../../../../../../../../admin/src/hooks/useInjectReducer';
+import { useLicenseLimits } from '../../../../../../hooks';
+import { resetWorkflow } from '../../actions';
+import * as Layout from '../../components/Layout';
+import * as LimitsModal from '../../components/LimitsModal';
+import { Stages } from '../../components/Stages';
+import { useInjectReducer } from '../../../../../../../../admin/src/hooks/useInjectReducer';
 import { resetWorkflow } from '../../actions';
 import * as Layout from '../../components/Layout';
 import { Stages } from '../../components/Stages';
 import { WorkflowAttributes } from '../../components/WorkflowAttributes';
 import { REDUX_NAMESPACE } from '../../constants';
+import { useReviewWorkflows } from '../../hooks/useReviewWorkflows';
 import { reducer, initialState } from '../../reducer';
 import { getWorkflowValidationSchema } from '../../utils/getWorkflowValidationSchema';
 
@@ -32,6 +43,9 @@ export function ReviewWorkflowsCreateView() {
       currentWorkflow: { data: currentWorkflow, isDirty: currentWorkflowIsDirty },
     },
   } = useSelector((state) => state?.[REDUX_NAMESPACE] ?? initialState);
+  const [showLimitModal, setShowLimitModal] = React.useState(false);
+  const { license, isLoading: isLicenseLoading } = useLicenseLimits();
+  const { pagination, isLoading: isWorkflowLoading } = useReviewWorkflows();
 
   const { mutateAsync, isLoading } = useMutation(
     async ({ workflow }) => {
@@ -88,6 +102,12 @@ export function ReviewWorkflowsCreateView() {
     dispatch(resetWorkflow());
   }, [dispatch]);
 
+  React.useEffect(() => {
+    if (!isLicenseLoading && !isWorkflowLoading && pagination?.total >= license?.data?.workflows) {
+      setShowLimitModal(true);
+    }
+  }, [isLicenseLoading, isWorkflowLoading, license?.data?.workflows, pagination?.total]);
+
   return (
     <>
       <Layout.DragLayerRendered />
@@ -141,6 +161,22 @@ export function ReviewWorkflowsCreateView() {
           </Layout.Root>
         </Form>
       </FormikProvider>
+
+      <LimitsModal.Root isOpen={showLimitModal} onClose={() => setShowLimitModal(false)}>
+        <LimitsModal.Title>
+          {formatMessage({
+            id: 'Settings.review-workflows.create.page.workflows.limit.title',
+            defaultMessage: 'You’ve reached the limit of workflows in your plan',
+          })}
+        </LimitsModal.Title>
+
+        <LimitsModal.Body>
+          {formatMessage({
+            id: 'Settings.review-workflows.create.page.workflows.limit.body',
+            defaultMessage: 'Delete a workflow or contact Sales to enable more workflows.',
+          })}
+        </LimitsModal.Body>
+      </LimitsModal.Root>
     </>
   );
 }
