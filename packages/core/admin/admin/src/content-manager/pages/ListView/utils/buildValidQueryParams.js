@@ -1,32 +1,28 @@
-import set from 'lodash/set';
-
-import createPluginsFilter from './createPluginsFilter';
+const createPluginsFilter = (obj) =>
+  Object.values(obj || {}).reduce((acc, current) => Object.assign(acc, current), {});
 
 /**
+ * @description
  * Creates a valid query params object
  * This includes:
- * - a filters clause
- * - plugin options
+ * - A filters clause
+ * - Plugin options
+ * @param {object} [queryParams={}] - The current query params
+ * @returns {object} - The modified query params
  */
 const buildValidQueryParams = (queryParams = {}) => {
-  /**
-   * Extracting pluginOptions from the query since we don't want them to be part
-   * of the url
-   */
-  const {
-    plugins: _,
-    _q: query,
-    ...otherQueryParams
-  } = {
+  console.log(queryParams.plugins, createPluginsFilter(queryParams.plugins));
+  // Extract pluginOptions from the query,they shouldn't be part of the URL
+  const { _q: searchQuery, ...validQueryParams } = {
     ...queryParams,
     ...createPluginsFilter(queryParams.plugins),
   };
 
-  if (query) {
-    set(otherQueryParams, `_q`, encodeURIComponent(query));
+  if (searchQuery) {
+    validQueryParams._q = encodeURIComponent(searchQuery);
   }
 
-  return otherQueryParams;
+  return validQueryParams;
 };
 
 export default buildValidQueryParams;

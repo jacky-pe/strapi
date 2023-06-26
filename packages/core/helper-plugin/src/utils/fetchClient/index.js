@@ -39,7 +39,6 @@ export const fetchClient = () => {
       'Content-Type': 'application/json',
     },
     paramsSerializer: (params) => {
-      console.log('coucou');
       return qs.stringify(params, { encode: false });
     },
   });
