@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { useFindRedirectionLink } from '../../hooks';
+import { buildValidQueryParams } from '../../pages/ListView/utils';
 import {
   getData,
   getDataSucceeded,
@@ -43,7 +44,8 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
   const { setCurrentStep } = useGuidedTour();
   const { trackUsage } = useTracking();
   const { push, replace } = useHistory();
-  const [{ rawQuery }] = useQueryParams();
+  const [{ query, rawQuery }] = useQueryParams();
+  const params = buildValidQueryParams(query);
   const dispatch = useDispatch();
   const { componentsDataStructure, contentTypeDataStructure, data, isLoading, status } =
     useSelector(selectCrudReducer);
@@ -244,13 +246,15 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
        */
       const endPoint =
         typeof origin === 'string'
-          ? `${getRequestUrl(`collection-types/${slug}/clone/${origin}`)}${rawQuery}`
-          : `${getRequestUrl(`collection-types/${slug}`)}${rawQuery}`;
+          ? `${getRequestUrl(`collection-types/${slug}/clone/${origin}`)}`
+          : `${getRequestUrl(`collection-types/${slug}`)}`;
       try {
         // Show a loading button in the EditView/Header.js && lock the app => no navigation
         dispatch(setStatus('submit-pending'));
 
-        const { data } = await post(endPoint, body);
+        const { data } = await post(endPoint, body, {
+          params,
+        });
 
         trackUsageRef.current('didCreateEntry', trackerProperty);
         toggleNotification({
@@ -268,7 +272,7 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
         // Enable navigation and remove loaders
         dispatch(setStatus('resolved'));
 
-        replace(`/content-manager/collectionType/${slug}/${data.id}${rawQuery}`);
+        replace(`/content-manager/collectionType/${slug}/${data.id}`);
 
         return Promise.resolve(data);
       } catch (err) {
@@ -286,7 +290,7 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
       replace,
       slug,
       dispatch,
-      rawQuery,
+      params,
       toggleNotification,
       setCurrentStep,
       queryClient,
