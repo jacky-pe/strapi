@@ -121,8 +121,8 @@ function ListView({
       });
     },
     {
-      onSuccess(result) {
-        const { results, pagination: paginationResult } = result.data;
+      onSuccess({ data }) {
+        const { results, pagination: paginationResult } = data;
 
         notifyStatus(
           formatMessage(

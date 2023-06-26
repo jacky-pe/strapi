@@ -11,9 +11,12 @@ const createPluginsFilter = (obj) =>
  * @returns {object} - The modified query params
  */
 const buildValidQueryParams = (queryParams = {}) => {
-  console.log(queryParams.plugins, createPluginsFilter(queryParams.plugins));
-  // Extract pluginOptions from the query,they shouldn't be part of the URL
-  const { _q: searchQuery, ...validQueryParams } = {
+  // Extract pluginOptions from the query, they shouldn't be part of the URL
+  const {
+    plugins: _,
+    _q: searchQuery,
+    ...validQueryParams
+  } = {
     ...queryParams,
     ...createPluginsFilter(queryParams.plugins),
   };
