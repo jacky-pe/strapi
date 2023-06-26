@@ -1,8 +1,6 @@
-'use strict';
-
-const _ = require('lodash');
-const { subject } = require('@casl/ability');
-const permissions = require('..');
+import _ from 'lodash';
+import { subject } from '@casl/ability';
+import permissions from '..';
 
 describe('Permissions Engine', () => {
   const allowedCondition = 'plugin::test.isAuthor';

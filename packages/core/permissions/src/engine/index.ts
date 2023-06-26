@@ -1,23 +1,14 @@
-'use strict';
+import _ from 'lodash/fp';
+import * as abilities from './abilities';
 
-const _ = require('lodash/fp');
-
-const abilities = require('./abilities');
-
-const {
+import {
   createEngineHooks,
   createWillRegisterContext,
   createBeforeEvaluateContext,
   createValidateContext,
-} = require('./hooks');
+} from './hooks';
 
-/**
- * @typedef {import("../..").PermissionEngine} PermissionEngine
- * @typedef {import("../..").ActionProvider} ActionProvider
- * @typedef {import("../..").ConditionProvider} ConditionProvider
- * @typedef {import("../..").PermissionEngineParams} PermissionEngineParams
- * @typedef {import("../..").Permission} Permission
- */
+import type { PermissionEngine, PermissionEngineParams } from '../types';
 
 /**
  * Create a default state object for the engine
@@ -28,17 +19,9 @@ const createEngineState = () => {
   return { hooks };
 };
 
-module.exports = {
+export default {
   abilities,
-
-  /**
-   * Create a new instance of a permission engine
-   *
-   * @param {PermissionEngineParams} params
-   *
-   * @return {PermissionEngine}
-   */
-  new(params) {
+  new(params: PermissionEngineParams): PermissionEngine {
     const { providers, abilityBuilderFactory = abilities.caslAbilityBuilder } = params;
 
     const state = createEngineState();

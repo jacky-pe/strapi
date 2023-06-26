@@ -1,16 +1,11 @@
-'use strict';
+import { cloneDeep, has } from 'lodash/fp';
+import { hooks } from '@strapi/utils';
+import type { Permission, PermissionEngineHooks } from '../types';
 
-const { cloneDeep, has } = require('lodash/fp');
-const { hooks } = require('@strapi/utils');
+import domain from '../domain';
 
-const domain = require('../domain');
-
-/**
- * Create a hook map used by the permission Engine
- *
- * @return {import('../..').PermissionEngineHooks}
- */
-const createEngineHooks = () => ({
+// Create a hook map used by the permission Engine
+const createEngineHooks = (): PermissionEngineHooks => ({
   'before-format::validate.permission': hooks.createAsyncBailHook(),
   'format.permission': hooks.createAsyncSeriesWaterfallHook(),
   'after-format::validate.permission': hooks.createAsyncBailHook(),
@@ -20,26 +15,22 @@ const createEngineHooks = () => ({
 
 /**
  * Create a context from a domain {@link Permission} used by the validate hooks
- * @param {Permission} permission
- * @return {{ readonly permission: Permission }}
  */
-const createValidateContext = (permission) => ({
-  get permission() {
+const createValidateContext = (permission: Permission) => ({
+  get permission(): Permission {
     return cloneDeep(permission);
   },
 });
 
 /**
  * Create a context from a domain {@link Permission} used by the before valuate hook
- * @param {Permission} permission
- * @return {{readonly permission: Permission, addCondition(string): this}}
  */
-const createBeforeEvaluateContext = (permission) => ({
-  get permission() {
+const createBeforeEvaluateContext = (permission: Permission) => ({
+  get permission(): Permission {
     return cloneDeep(permission);
   },
 
-  addCondition(condition) {
+  addCondition(condition: string) {
     Object.assign(permission, domain.permission.addCondition(condition, permission));
 
     return this;
@@ -89,7 +80,7 @@ const createWillRegisterContext = ({ permission, options }) => ({
   },
 });
 
-module.exports = {
+export {
   createEngineHooks,
   createValidateContext,
   createBeforeEvaluateContext,

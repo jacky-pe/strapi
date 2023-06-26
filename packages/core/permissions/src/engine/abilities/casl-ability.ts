@@ -1,8 +1,7 @@
-'use strict';
-
-const sift = require('sift');
-const { AbilityBuilder, Ability } = require('@casl/ability');
-const { pick, isNil, isObject } = require('lodash/fp');
+import sift, { createQueryTester } from 'sift';
+import { AbilityBuilder, Ability } from '@casl/ability';
+import { pick, isNil, isObject } from 'lodash/fp';
+import { CanPermission } from '../../types';
 
 const allowedOperations = [
   '$or',
@@ -17,12 +16,12 @@ const allowedOperations = [
   '$gte',
   '$exists',
   '$elemMatch',
-];
+] as const;
 
 const operations = pick(allowedOperations, sift);
 
-const conditionsMatcher = (conditions) => {
-  return sift.createQueryTester(conditions, { operations });
+const conditionsMatcher = (conditions: unknown) => {
+  return createQueryTester(conditions, { operations });
 };
 
 /**
@@ -32,7 +31,7 @@ const caslAbilityBuilder = () => {
   const { can, build, ...rest } = new AbilityBuilder(Ability);
 
   return {
-    can(permission) {
+    can(permission: CanPermission) {
       const { action, subject, properties = {}, condition } = permission;
       const { fields } = properties;
 
@@ -52,6 +51,4 @@ const caslAbilityBuilder = () => {
   };
 };
 
-module.exports = {
-  caslAbilityBuilder,
-};
+export default caslAbilityBuilder;

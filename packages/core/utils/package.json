@@ -32,9 +32,6 @@
   "files": [
     "./dist"
   ],
-  "directories": {
-    "lib": "./lib"
-  },
   "scripts": {
     "build": "run -T tsc",
     "build:ts": "run build",
