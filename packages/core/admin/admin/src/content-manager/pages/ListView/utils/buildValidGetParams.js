@@ -3,10 +3,9 @@ const createPluginsFilter = (obj) =>
 
 /**
  * @description
- * Creates a valid query params object
- * This includes:
- * - A filters clause
- * - Plugin options
+ * Creates a valid query params object for get requests
+ * ie. plugins[18n][locale]=en becomes locale=en
+ * @param {object} [query={}] - The query params
  * @returns {object} - The modified query params
  */
 const buildValidGetParams = (query = {}) => {
