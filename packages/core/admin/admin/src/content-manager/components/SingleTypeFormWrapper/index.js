@@ -338,7 +338,7 @@ const SingleTypeFormWrapper = ({ allLayoutData, children, slug }) => {
         endPoint,
         {},
         {
-          params,
+          params: query,
         }
       );
 
@@ -355,7 +355,7 @@ const SingleTypeFormWrapper = ({ allLayoutData, children, slug }) => {
       dispatch(setStatus('resolved'));
       displayErrors(err);
     }
-  }, [post, cleanReceivedData, toggleNotification, displayErrors, slug, dispatch, params]);
+  }, [post, cleanReceivedData, toggleNotification, displayErrors, slug, dispatch, query]);
 
   return children({
     componentsDataStructure,
