@@ -56,7 +56,7 @@ import { ConfirmDialogDeleteAll } from './components/ConfirmDialogDeleteAll';
 import { FieldPicker } from './components/FieldPicker';
 import { TableRows } from './components/TableRows';
 import makeSelectListView, { selectDisplayedHeaders } from './selectors';
-import { buildValidQueryParams } from './utils';
+import { buildValidGetParams } from './utils';
 
 const ConfigureLayoutBox = styled(Box)`
   svg {
@@ -100,7 +100,7 @@ function ListView({
   useFocusWhenNavigate();
 
   const [{ query }] = useQueryParams();
-  const params = buildValidQueryParams(query);
+  const params = buildValidGetParams(query);
   const pluginsQueryParams = stringify({ plugins: query.plugins }, { encode: false });
 
   const { pathname } = useLocation();

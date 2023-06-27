@@ -1,7 +1,12 @@
 import React from 'react';
 
 import { BaseCheckbox, IconButton, Tbody, Td, Tr, Flex } from '@strapi/design-system';
-import { useTracking, useFetchClient, useAPIErrorHandler } from '@strapi/helper-plugin';
+import {
+  useTracking,
+  useFetchClient,
+  useAPIErrorHandler,
+  useQueryParams,
+} from '@strapi/helper-plugin';
 import { Trash, Duplicate, Pencil } from '@strapi/icons';
 import { AxiosError } from 'axios';
 import PropTypes from 'prop-types';
@@ -32,6 +37,7 @@ export const TableRows = ({
 
   const { trackUsage } = useTracking();
   const pluginsQueryParams = usePluginsQueryParams();
+  const [{ query }] = useQueryParams();
   const { formatAPIError } = useAPIErrorHandler(getTrad);
 
   /**
@@ -53,7 +59,9 @@ export const TableRows = ({
   const handleCloneClick = (id) => async () => {
     try {
       const { data } = await post(
-        `/content-manager/collection-types/${contentType.uid}/auto-clone/${id}?${pluginsQueryParams}`
+        `/content-manager/collection-types/${contentType.uid}/auto-clone/${id}`,
+        {},
+        { params: { plugins: query?.plugins } || {} }
       );
 
       if ('id' in data) {

@@ -16,7 +16,7 @@ import { useQuery, useQueryClient } from 'react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { buildValidQueryParams } from '../../pages/ListView/utils';
+import { buildValidGetParams } from '../../pages/ListView/utils';
 import {
   getData,
   getDataSucceeded,
@@ -40,7 +40,7 @@ const SingleTypeFormWrapper = ({ allLayoutData, children, slug }) => {
   const trackUsageRef = useRef(trackUsage);
   const [isCreatingEntry, setIsCreatingEntry] = useState(true);
   const [{ query, rawQuery }] = useQueryParams();
-  const params = buildValidQueryParams(query);
+  const params = buildValidGetParams(query);
   const toggleNotification = useNotification();
   const dispatch = useDispatch();
   const { formatAPIError } = useAPIErrorHandler(getTrad);
@@ -156,7 +156,7 @@ const SingleTypeFormWrapper = ({ allLayoutData, children, slug }) => {
         trackUsageRef.current('willDeleteEntry', trackerProperty);
 
         const { data } = await del(getRequestUrl(`${slug}`), {
-          params,
+          params: query,
         });
 
         toggleNotification({
@@ -178,17 +178,17 @@ const SingleTypeFormWrapper = ({ allLayoutData, children, slug }) => {
         return Promise.reject(err);
       }
     },
-    [del, slug, displayErrors, toggleNotification, params, dispatch, rawQuery]
+    [del, slug, displayErrors, toggleNotification, query, dispatch, rawQuery]
   );
 
   const onPost = useCallback(
     async (body, trackerProperty) => {
-      const endPoint = getRequestUrl(`${slug}${rawQuery}`);
+      const endPoint = getRequestUrl(`${slug}`);
 
       try {
         dispatch(setStatus('submit-pending'));
 
-        const { data } = await put(endPoint, body);
+        const { data } = await put(endPoint, body, { params: query });
 
         trackUsageRef.current('didCreateEntry', trackerProperty);
         toggleNotification({
@@ -223,7 +223,7 @@ const SingleTypeFormWrapper = ({ allLayoutData, children, slug }) => {
       displayErrors,
       slug,
       dispatch,
-      rawQuery,
+      query,
       toggleNotification,
       setCurrentStep,
       queryClient,
@@ -258,9 +258,13 @@ const SingleTypeFormWrapper = ({ allLayoutData, children, slug }) => {
 
       dispatch(setStatus('publish-pending'));
 
-      const { data } = await post(endPoint, {
-        params,
-      });
+      const { data } = await post(
+        endPoint,
+        {},
+        {
+          params: query,
+        }
+      );
 
       trackUsageRef.current('didPublishEntry');
       toggleNotification({
@@ -280,18 +284,18 @@ const SingleTypeFormWrapper = ({ allLayoutData, children, slug }) => {
 
       return Promise.reject(err);
     }
-  }, [post, cleanReceivedData, displayErrors, slug, params, dispatch, toggleNotification]);
+  }, [post, cleanReceivedData, displayErrors, slug, query, dispatch, toggleNotification]);
 
   const onPut = useCallback(
     async (body, trackerProperty) => {
-      const endPoint = getRequestUrl(`${slug}${rawQuery}`);
+      const endPoint = getRequestUrl(`${slug}`);
 
       try {
         trackUsageRef.current('willEditEntry', trackerProperty);
 
         dispatch(setStatus('submit-pending'));
 
-        const { data } = await put(endPoint, body);
+        const { data } = await put(endPoint, body, { params: query });
 
         toggleNotification({
           type: 'success',
@@ -318,16 +322,7 @@ const SingleTypeFormWrapper = ({ allLayoutData, children, slug }) => {
         return Promise.reject(err);
       }
     },
-    [
-      put,
-      cleanReceivedData,
-      displayErrors,
-      slug,
-      dispatch,
-      rawQuery,
-      toggleNotification,
-      queryClient,
-    ]
+    [put, cleanReceivedData, displayErrors, slug, dispatch, query, toggleNotification, queryClient]
   );
 
   // The publish and unpublish method could be refactored but let's leave the duplication for now
@@ -339,9 +334,13 @@ const SingleTypeFormWrapper = ({ allLayoutData, children, slug }) => {
     try {
       trackUsageRef.current('willUnpublishEntry');
 
-      const { data } = await post(endPoint, {
-        params,
-      });
+      const { data } = await post(
+        endPoint,
+        {},
+        {
+          params,
+        }
+      );
 
       trackUsageRef.current('didUnpublishEntry');
       toggleNotification({

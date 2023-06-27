@@ -7,18 +7,17 @@ const createPluginsFilter = (obj) =>
  * This includes:
  * - A filters clause
  * - Plugin options
- * @param {object} [queryParams={}] - The current query params
  * @returns {object} - The modified query params
  */
-const buildValidQueryParams = (queryParams = {}) => {
+const buildValidGetParams = (query = {}) => {
   // Extract pluginOptions from the query, they shouldn't be part of the URL
   const {
     plugins: _,
     _q: searchQuery,
     ...validQueryParams
   } = {
-    ...queryParams,
-    ...createPluginsFilter(queryParams.plugins),
+    ...query,
+    ...createPluginsFilter(query.plugins),
   };
 
   if (searchQuery) {
@@ -28,4 +27,4 @@ const buildValidQueryParams = (queryParams = {}) => {
   return validQueryParams;
 };
 
-export default buildValidQueryParams;
+export default buildValidGetParams;

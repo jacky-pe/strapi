@@ -19,7 +19,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { useFindRedirectionLink } from '../../hooks';
-import { buildValidQueryParams } from '../../pages/ListView/utils';
 import {
   getData,
   getDataSucceeded,
@@ -45,7 +44,6 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
   const { trackUsage } = useTracking();
   const { push, replace } = useHistory();
   const [{ query, rawQuery }] = useQueryParams();
-  const params = buildValidQueryParams(query);
   const dispatch = useDispatch();
   const { componentsDataStructure, contentTypeDataStructure, data, isLoading, status } =
     useSelector(selectCrudReducer);
@@ -253,7 +251,7 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
         dispatch(setStatus('submit-pending'));
 
         const { data } = await post(endPoint, body, {
-          params,
+          params: query,
         });
 
         trackUsageRef.current('didCreateEntry', trackerProperty);
@@ -290,7 +288,7 @@ const CollectionTypeFormWrapper = ({ allLayoutData, children, slug, id, origin }
       replace,
       slug,
       dispatch,
-      params,
+      query,
       toggleNotification,
       setCurrentStep,
       queryClient,

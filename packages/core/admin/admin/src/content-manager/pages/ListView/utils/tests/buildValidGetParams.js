@@ -1,4 +1,4 @@
-import { buildValidQueryParams } from '../index';
+import { buildValidGetParams } from '../index';
 
 describe('buildValidQueryParams', () => {
   it('should format query params from plugins', () => {
@@ -11,7 +11,7 @@ describe('buildValidQueryParams', () => {
       },
     };
 
-    const params = buildValidQueryParams(queryParams);
+    const params = buildValidGetParams(queryParams);
 
     const expectedParams = {
       page: '1',
@@ -32,7 +32,7 @@ describe('buildValidQueryParams', () => {
       _q,
     };
 
-    const params = buildValidQueryParams(queryParams);
+    const params = buildValidGetParams(queryParams);
     const expectedParams = {
       page: '1',
       pageSize: '10',

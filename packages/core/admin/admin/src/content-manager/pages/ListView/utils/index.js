@@ -1,1 +1,1 @@
-export { default as buildValidQueryParams } from './buildValidQueryParams';
+export { default as buildValidGetParams } from './buildValidGetParams';
