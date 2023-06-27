@@ -42,12 +42,7 @@ export const useAssets = ({ skipWhen = false, query = {} } = {}) => {
 
   const getAssets = async () => {
     try {
-      const { data } = await get(
-        `${dataRequestURL}${stringify(params, {
-          encode: false,
-          addQueryPrefix: true,
-        })}`
-      );
+      const { data } = await get(dataRequestURL, { params });
 
       notifyStatus(
         formatMessage({
