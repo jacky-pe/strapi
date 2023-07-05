@@ -51,7 +51,7 @@
     "@strapi/babel-plugin-switch-ee-ce": "4.11.3",
     "@strapi/data-transfer": "4.11.3",
     "@strapi/design-system": "1.8.0",
-    "@strapi/helper-plugin": "4.11.3",
+    "@strapi/helper-plugin": "4.0.0",
     "@strapi/icons": "1.8.0",
     "@strapi/permissions": "4.11.3",
     "@strapi/provider-audit-logs-local": "4.11.3",
