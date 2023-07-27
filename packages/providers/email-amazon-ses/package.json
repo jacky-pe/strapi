@@ -42,7 +42,7 @@
     "lint": "run -T eslint ."
   },
   "dependencies": {
-    "@strapi/utils": "4.11.3",
+    "@strapi/utils": "4.10.8",
     "node-ses": "^3.0.3"
   },
   "devDependencies": {
