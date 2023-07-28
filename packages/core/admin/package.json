@@ -49,7 +49,7 @@
     "@fingerprintjs/fingerprintjs": "3.4.1",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.10",
     "@strapi/babel-plugin-switch-ee-ce": "4.11.3",
-    "@strapi/data-transfer": "4.11.3",
+    "@strapi/data-transfer": "4.12.0",
     "@strapi/design-system": "1.8.0",
     "@strapi/helper-plugin": "4.11.3",
     "@strapi/icons": "1.8.0",
